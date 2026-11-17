@@ -70,8 +70,8 @@
     // ✏️ Header text in both languages
     const ui = {
       tagline: { ro: "Proiecte CAD", en: "CAD projects" },
-      intro:   { ro: "Student. Modelez în Fusion 360 pentru facultate, pentru imprimanta mea Bambu P1S și uneori doar de plăcere. Trage de orice model ca să-l rotești.",
-                 en: "Student. I model in Fusion 360 for uni, for my Bambu P1S, and sometimes just for fun. Drag any model to look around." },
+      intro:   { ro: "Student. Modelez în Fusion 360. Trage de modele ca să le rotești.",
+                 en: "Student. I model in Fusion 360. Drag the models to spin them." },
       hint:    { ro: "trage · zoom", en: "drag · zoom" }
     };
 
@@ -79,24 +79,20 @@
     // specs: [label in Romanian, label in English, value]
     const projects = [
       { title: { ro: "Carcasă și capac pentru lanternă DIY", en: "DIY flashlight case & lid" },
-        text:  { ro: "Carcasă tubulară pentru o lanternă făcută de mine: două baterii, un rezistor și un LED roșu. Nervurile interioare țin componentele pe loc și ghidează firul de cupru, iar capacul semicilindric se închide deasupra. În model, capacul e ridicat ca să se vadă interiorul.",
-                 en: "A tube-style case for a flashlight I built: two batteries, a resistor and a red LED. Internal ribs hold the parts and guide the copper wire, and a half-round lid closes it on top. The lid is lifted in the model so you can see inside." },
-        specs: [["Piese", "Parts", "Carcasă + capac"], ["Electronică", "Electronics", "LED · 660 Ω"], ["Lungime", "Length", "≈112 mm"]],
+        text:  { ro: "Pentru o lanternă construită de mine. Nervurile interioare ghidează firul.", en: "For a flashlight I built. Inner ribs route the wire." },
+        specs: [["Piese", "Parts", "Carcasă + capac"], ["Electronică", "Electronics", "LED · 660 Ω"]],
         model: "models/flashlight-case.glb" },
       { title: { ro: "Buton custom cu sigla C.R.", en: "Custom button with C.R. logo" },
-        text:  { ro: "Buton făcut la cererea unei cunoștințe, cu inițialele ei ca siglă adâncită pe față. Pentru aderență am pornit de la o singură canelură și am multiplicat-o cu un model circular.",
-                 en: "A button made on request for a friend, with their initials as a recessed logo on top. For grip I started from a single groove and repeated it with a circular pattern." },
-        specs: [["Tip", "Type", "Comandă custom"], ["Caneluri", "Grooves", "24"], ["Funcție", "Feature", "Circular pattern"]],
+        text:  { ro: "Comandă pentru o cunoștință, cu inițialele ei ca siglă.", en: "Made on request, with a friend's initials as the logo." },
+        specs: [["Tip", "Type", "Comandă custom"], ["Caneluri", "Grooves", "24"]],
         model: "models/grip-button.glb" },
       { title: { ro: "Sticlă de parfum octogonală", en: "Octagonal perfume bottle" },
-        text:  { ro: "Corp de sticlă cu opt fețe și gât cilindric. Fiecare față are un panou adâncit, desenat o singură dată și repetat circular, pentru un aspect curat și modern.",
-                 en: "An eight-sided bottle body with a round neck. Each face has a recessed panel, drawn once and repeated around the bottle for a clean, modern look." },
-        specs: [["Fețe", "Faces", "8"], ["Panou", "Panel", "9 × 44 mm, 1.2 mm"], ["Înălțime", "Height", "80 mm"]],
+        text:  { ro: "Opt fețe, fiecare cu un panou adâncit.", en: "Eight faces, each with a recessed panel." },
+        specs: [["Fețe", "Faces", "8"], ["Panou", "Panel", "9 × 44 mm, 1.2 mm"]],
         model: "models/perfume-bottle.glb" },
       { title: { ro: "Capac cupolă bizantină", en: "Onion dome cap" },
-        text:  { ro: "Capacul sticlei de parfum, inspirat de cupolele bisericilor ortodoxe. Forma de bulb e construită din zece trepte suprapuse, cu o gaură interioară de Ø8 mm ca să funcționeze ca un capac.",
-                 en: "The cap for the perfume bottle, inspired by Orthodox church domes. The onion shape is built from ten stacked tiers, with an Ø8 mm bore inside so it works as a cap." },
-        specs: [["Trepte", "Tiers", "10"], ["Gaură", "Bore", "Ø8 mm"], ["Pereche cu", "Pairs with", "Sticla de parfum"]],
+        text:  { ro: "Inspirat de cupolele ortodoxe. Se potrivește pe sticlă.", en: "Inspired by Orthodox domes. Fits the bottle." },
+        specs: [["Trepte", "Tiers", "10"], ["Gaură", "Bore", "Ø8 mm"]],
         model: "models/onion-dome-cap.glb" },
     ];
 
@@ -109,7 +105,7 @@
         <div class="num">${String(i + 1).padStart(2, "0")}</div>
         <div class="frame">
           <model-viewer src="${p.model}" camera-controls auto-rotate rotation-per-second="15deg"
-            shadow-intensity="1" interaction-prompt="none" loading="lazy"></model-viewer>
+            environment-image="neutral" exposure="0.75" shadow-intensity="1.2" shadow-softness="0.6" interaction-prompt="none" loading="lazy"></model-viewer>
           <small data-t="hint"></small>
         </div>
         <div class="text">
