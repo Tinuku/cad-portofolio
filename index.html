@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Valentin-Gabriel Marincaș — CAD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,500;62..125,700&display=swap" rel="stylesheet">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <style>
+    :root { --ink: #121417; --soft: #63676d; --bg: #e4e5e6; --box: #eef0f1; --line: #bfc3c8; --blue: #1d4f91; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Archivo", Arial, sans-serif; font-size: 15px; }
+    a { color: inherit; text-underline-offset: 3px; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 32px 24px 48px; }
+
+    .top { display: flex; justify-content: flex-end; margin-bottom: 36px; }
+    .lang { display: flex; border: 1px solid var(--ink); }
+    .lang button { font: 500 12px "Archivo", sans-serif; letter-spacing: .08em; background: none; border: 0; padding: 6px 12px; cursor: pointer; color: var(--ink); }
+    .lang button.on { background: var(--ink); color: var(--bg); }
+
+    header { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap;
+             border-bottom: 2px solid var(--ink); padding-bottom: 20px; }
+    h1 { font-weight: 700; font-stretch: 75%; text-transform: uppercase; font-size: clamp(44px, 7.5vw, 88px); line-height: .98; margin: 0; letter-spacing: -.01em; }
+    h1 span { color: var(--soft); font-weight: 400; }
+    header p { margin: 0; color: var(--soft); max-width: 34ch; line-height: 1.55; }
+
+    .project { display: grid; grid-template-columns: 70px 1fr 300px; gap: 28px; padding: 36px 0; border-bottom: 1px solid var(--line); align-items: start; }
+    .num { font-weight: 700; font-stretch: 75%; font-size: 52px; line-height: .85; color: transparent; -webkit-text-stroke: 1.2px var(--ink); }
+    .frame { position: relative; border: 1px solid var(--ink); background: var(--box); }
+    .frame::before, .frame::after { content: ""; position: absolute; width: 14px; height: 14px; border: 0 solid var(--ink); }
+    .frame::before { top: -7px; left: -7px; border-top-width: 1px; border-left-width: 1px; }
+    .frame::after  { bottom: -7px; right: -7px; border-bottom-width: 1px; border-right-width: 1px; }
+    model-viewer { display: block; width: 100%; height: 380px; --poster-color: transparent; background: transparent; }
+    .frame small { position: absolute; left: 10px; bottom: 8px; font-size: 11px; color: var(--soft); letter-spacing: .06em; text-transform: uppercase; pointer-events: none; }
+
+    .text h2 { font-weight: 700; font-stretch: 85%; font-size: 26px; line-height: 1.05; margin: 0 0 12px; }
+    .text p { margin: 0 0 16px; line-height: 1.6; }
+    .text ul { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+    .text li { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .text li b { font-weight: 400; color: var(--soft); }
+
+    footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 28px; color: var(--soft); font-size: 13px; }
+
+    @media (max-width: 760px) {
+      .project { grid-template-columns: 1fr; gap: 16px; }
+      model-viewer { height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="lang"><button data-l="ro">RO</button><button data-l="en">EN</button></div>
+    </div>
+
+    <header>
+      <h1>Valentin-Gabriel<br>Marincaș<br><span data-t="tagline"></span></h1>
+      <p data-t="intro"></p>
+    </header>
+
+    <main id="list"></main>
+
+    <footer>
+      <span>© 2026 Valentin-Gabriel Marincaș</span>
+      <span><a href="mailto:tinuku182@gmail.com">tinuku182@gmail.com</a></span>
+    </footer>
+  </div>
+
+  <script>
+    // ✏️ Header text in both languages
+    const ui = {
+      tagline: { ro: "Proiecte CAD", en: "CAD projects" },
+      intro:   { ro: "Student. Modelez în Fusion 360 pentru facultate, pentru imprimanta mea Bambu P1S și uneori doar de plăcere. Trage de orice model ca să-l rotești.",
+                 en: "Student. I model in Fusion 360 for uni, for my Bambu P1S, and sometimes just for fun. Drag any model to look around." },
+      hint:    { ro: "trage · zoom", en: "drag · zoom" }
+    };
+
+    // ✏️ Your 4 projects. Put .glb files in models/ and point "model" at them.
+    // specs: [label in Romanian, label in English, value]
+    const projects = [
+      { title: { ro: "Carcasă și capac pentru lanternă DIY", en: "DIY flashlight case & lid" },
+        text:  { ro: "Carcasă tubulară pentru o lanternă făcută de mine: două baterii, un rezistor și un LED roșu. Nervurile interioare țin componentele pe loc și ghidează firul de cupru, iar capacul semicilindric se închide deasupra. În model, capacul e ridicat ca să se vadă interiorul.",
+                 en: "A tube-style case for a flashlight I built: two batteries, a resistor and a red LED. Internal ribs hold the parts and guide the copper wire, and a half-round lid closes it on top. The lid is lifted in the model so you can see inside." },
+        specs: [["Piese", "Parts", "Carcasă + capac"], ["Electronică", "Electronics", "LED · 660 Ω"], ["Lungime", "Length", "≈112 mm"]],
+        model: "models/flashlight-case.glb" },
+      { title: { ro: "Buton custom cu sigla C.R.", en: "Custom button with C.R. logo" },
+        text:  { ro: "Buton făcut la cererea unei cunoștințe, cu inițialele ei ca siglă adâncită pe față. Pentru aderență am pornit de la o singură canelură și am multiplicat-o cu un model circular.",
+                 en: "A button made on request for a friend, with their initials as a recessed logo on top. For grip I started from a single groove and repeated it with a circular pattern." },
+        specs: [["Tip", "Type", "Comandă custom"], ["Caneluri", "Grooves", "24"], ["Funcție", "Feature", "Circular pattern"]],
+        model: "models/grip-button.glb" },
+      { title: { ro: "Sticlă de parfum octogonală", en: "Octagonal perfume bottle" },
+        text:  { ro: "Corp de sticlă cu opt fețe și gât cilindric. Fiecare față are un panou adâncit, desenat o singură dată și repetat circular, pentru un aspect curat și modern.",
+                 en: "An eight-sided bottle body with a round neck. Each face has a recessed panel, drawn once and repeated around the bottle for a clean, modern look." },
+        specs: [["Fețe", "Faces", "8"], ["Panou", "Panel", "9 × 44 mm, 1.2 mm"], ["Înălțime", "Height", "80 mm"]],
+        model: "models/perfume-bottle.glb" },
+      { title: { ro: "Capac cupolă bizantină", en: "Onion dome cap" },
+        text:  { ro: "Capacul sticlei de parfum, inspirat de cupolele bisericilor ortodoxe. Forma de bulb e construită din zece trepte suprapuse, cu o gaură interioară de Ø8 mm ca să funcționeze ca un capac.",
+                 en: "The cap for the perfume bottle, inspired by Orthodox church domes. The onion shape is built from ten stacked tiers, with an Ø8 mm bore inside so it works as a cap." },
+        specs: [["Trepte", "Tiers", "10"], ["Gaură", "Bore", "Ø8 mm"], ["Pereche cu", "Pairs with", "Sticla de parfum"]],
+        model: "models/onion-dome-cap.glb" },
+    ];
+
+    let lang = "ro";                                   // Romanian loads first
+    try { lang = localStorage.getItem("lang") || "ro"; } catch (e) {}
+
+    // Build the project rows once (so the 3D models don't reload when switching language)
+    document.getElementById("list").innerHTML = projects.map((p, i) => `
+      <article class="project">
+        <div class="num">${String(i + 1).padStart(2, "0")}</div>
+        <div class="frame">
+          <model-viewer src="${p.model}" camera-controls auto-rotate rotation-per-second="15deg"
+            shadow-intensity="1" interaction-prompt="none" loading="lazy"></model-viewer>
+          <small data-t="hint"></small>
+        </div>
+        <div class="text">
+          <h2 data-p="${i}" data-k="title"></h2>
+          <p data-p="${i}" data-k="text"></p>
+          <ul>${p.specs.map((s, j) => `<li><b data-p="${i}" data-s="${j}"></b>${s[2]}</li>`).join("")}</ul>
+        </div>
+      </article>`).join("");
+
+    function setLang(l) {
+      lang = l;
+      try { localStorage.setItem("lang", l); } catch (e) {}
+      document.documentElement.lang = l;
+      document.querySelectorAll("[data-t]").forEach(el => el.textContent = ui[el.dataset.t][l]);
+      document.querySelectorAll("[data-k]").forEach(el => el.textContent = projects[el.dataset.p][el.dataset.k][l]);
+      document.querySelectorAll("[data-s]").forEach(el => el.textContent = projects[el.dataset.p].specs[el.dataset.s][l === "ro" ? 0 : 1]);
+      document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.l === l));
+    }
+    document.querySelectorAll(".lang button").forEach(b => b.onclick = () => setLang(b.dataset.l));
+    setLang(lang);
+  </script>
+</body>
+</html>
