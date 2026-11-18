@@ -39,11 +39,19 @@
     .text li { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
     .text li b { font-weight: 400; color: var(--soft); }
 
+    .group { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap;
+             margin-top: 44px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
+    .group h3 { margin: 0; font-weight: 700; font-stretch: 75%; text-transform: uppercase; font-size: 30px; letter-spacing: .01em; }
+    .group span { color: var(--soft); font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+    .drawing { display: flex; align-items: center; justify-content: center; height: 380px; padding: 24px; background: #fff; }
+    .drawing img { max-width: 100%; max-height: 100%; display: block; }
+    .text a.dl { display: inline-block; margin-top: 14px; font-size: 13px; }
+
     footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 28px; color: var(--soft); font-size: 13px; }
 
     @media (max-width: 760px) {
       .project { grid-template-columns: 1fr; gap: 16px; }
-      model-viewer { height: 300px; }
+      model-viewer, .drawing { height: 300px; }
     }
   </style>
 </head>
@@ -70,27 +78,46 @@
     // ✏️ Header text in both languages
     const ui = {
       tagline: { ro: "Proiecte CAD", en: "CAD projects" },
-      intro:   { ro: "Student. Modelez în Fusion 360. Trage de modele ca să le rotești.",
-                 en: "Student. I model in Fusion 360. Drag the models to spin them." },
-      hint:    { ro: "trage · zoom", en: "drag · zoom" }
+      intro:   { ro: "Student. Desenez 2D în AutoCAD și modelez 3D în Fusion 360. Trage de modele ca să le rotești.",
+                 en: "Student. I draw in 2D in AutoCAD and model in 3D in Fusion 360. Drag the models to spin them." },
+      hint:    { ro: "trage · zoom", en: "drag · zoom" },
+      hintImg: { ro: "click · mărește", en: "click · enlarge" },
+      dl:      { ro: "Descarcă fișierul DXF", en: "Download the DXF file" }
     };
 
-    // ✏️ Your 4 projects. Put .glb files in models/ and point "model" at them.
+    // ✏️ Section headings. Each project below names its group.
+    const groups = {
+      autocad: { title: { ro: "AutoCAD", en: "AutoCAD" }, note: { ro: "Desen tehnic 2D", en: "2D technical drawing" } },
+      fusion:  { title: { ro: "Fusion 360", en: "Fusion 360" }, note: { ro: "Modelare 3D · printat 3D", en: "3D modelling · 3D printed" } }
+    };
+
+    // ✏️ Your projects, in display order.
+    // 3D: put .glb files in models/ and set "model". 2D: put an .svg in drawings/ and set "drawing" (+ "dxf" for a download link).
     // specs: [label in Romanian, label in English, value]
     const projects = [
-      { title: { ro: "Carcasă și capac pentru lanternă DIY", en: "DIY flashlight case & lid" },
+      { group: "autocad",
+        title: { ro: "Rozetă gotică", en: "Gothic tracery rosette" },
+        text:  { ro: "Rozetă în trei părți, în stilul ferestrelor gotice, construită din arce tangente. Am desenat un segment și l-am multiplicat polar de trei ori.",
+                 en: "A three-part rosette in the style of Gothic window tracery, built from tangent arcs. I drew one segment, then used a polar array to repeat it three times." },
+        specs: [["Program", "Software", "AutoCAD"], ["Format", "Sheet", "A3"], ["Diametru", "Diameter", "Ø276 mm"]],
+        drawing: "drawings/gothic-rosette.svg", dxf: "drawings/gothic-rosette.dxf" },
+      { group: "fusion",
+        title: { ro: "Carcasă și capac pentru lanternă DIY", en: "DIY flashlight case & lid" },
         text:  { ro: "Pentru o lanternă construită de mine. Nervurile interioare ghidează firul.", en: "For a flashlight I built. Inner ribs route the wire." },
         specs: [["Piese", "Parts", "Carcasă + capac"], ["Electronică", "Electronics", "LED · 660 Ω"]],
         model: "models/flashlight-case.glb" },
-      { title: { ro: "Buton custom cu sigla C.R.", en: "Custom button with C.R. logo" },
+      { group: "fusion",
+        title: { ro: "Buton custom cu sigla C.R.", en: "Custom button with C.R. logo" },
         text:  { ro: "Comandă pentru o cunoștință, cu inițialele ei ca siglă.", en: "Made on request, with a friend's initials as the logo." },
         specs: [["Tip", "Type", "Comandă custom"], ["Caneluri", "Grooves", "24"]],
         model: "models/grip-button.glb" },
-      { title: { ro: "Sticlă de parfum octogonală", en: "Octagonal perfume bottle" },
+      { group: "fusion",
+        title: { ro: "Sticlă de parfum octogonală", en: "Octagonal perfume bottle" },
         text:  { ro: "Opt fețe, fiecare cu un panou adâncit.", en: "Eight faces, each with a recessed panel." },
         specs: [["Fețe", "Faces", "8"], ["Panou", "Panel", "9 × 44 mm, 1.2 mm"]],
         model: "models/perfume-bottle.glb" },
-      { title: { ro: "Capac cupolă bizantină", en: "Onion dome cap" },
+      { group: "fusion",
+        title: { ro: "Capac cupolă bizantină", en: "Onion dome cap" },
         text:  { ro: "Inspirat de cupolele ortodoxe. Se potrivește pe sticlă.", en: "Inspired by Orthodox domes. Fits the bottle." },
         specs: [["Trepte", "Tiers", "10"], ["Gaură", "Bore", "Ø8 mm"]],
         model: "models/onion-dome-cap.glb" },
@@ -100,18 +127,24 @@
     try { lang = localStorage.getItem("lang") || "ro"; } catch (e) {}
 
     // Build the project rows once (so the 3D models don't reload when switching language)
+    // A section heading appears wherever the group changes.
+    const media = p => p.drawing
+      ? `<a class="drawing" href="${p.drawing}" target="_blank" rel="noopener"><img src="${p.drawing}" alt="" loading="lazy"></a>
+         <small data-t="hintImg"></small>`
+      : `<model-viewer src="${p.model}" ${p.orbit ? `camera-orbit="${p.orbit}"` : ""} camera-controls auto-rotate rotation-per-second="15deg"
+            environment-image="neutral" exposure="0.75" shadow-intensity="1.2" shadow-softness="0.6" interaction-prompt="none" loading="lazy"></model-viewer>
+         <small data-t="hint"></small>`;
     document.getElementById("list").innerHTML = projects.map((p, i) => `
+      ${i === 0 || projects[i - 1].group !== p.group
+        ? `<div class="group"><h3 data-g="${p.group}" data-gk="title"></h3><span data-g="${p.group}" data-gk="note"></span></div>` : ""}
       <article class="project">
         <div class="num">${String(i + 1).padStart(2, "0")}</div>
-        <div class="frame">
-          <model-viewer src="${p.model}" ${p.orbit ? `camera-orbit="${p.orbit}"` : ""} camera-controls auto-rotate rotation-per-second="15deg"
-            environment-image="neutral" exposure="0.75" shadow-intensity="1.2" shadow-softness="0.6" interaction-prompt="none" loading="lazy"></model-viewer>
-          <small data-t="hint"></small>
-        </div>
+        <div class="frame">${media(p)}</div>
         <div class="text">
           <h2 data-p="${i}" data-k="title"></h2>
           <p data-p="${i}" data-k="text"></p>
           <ul>${p.specs.map((s, j) => `<li><b data-p="${i}" data-s="${j}"></b>${s[2]}</li>`).join("")}</ul>
+          ${p.dxf ? `<a class="dl" href="${p.dxf}" download data-t="dl"></a>` : ""}
         </div>
       </article>`).join("");
 
@@ -120,6 +153,7 @@
       try { localStorage.setItem("lang", l); } catch (e) {}
       document.documentElement.lang = l;
       document.querySelectorAll("[data-t]").forEach(el => el.textContent = ui[el.dataset.t][l]);
+      document.querySelectorAll("[data-g]").forEach(el => el.textContent = groups[el.dataset.g][el.dataset.gk][l]);
       document.querySelectorAll("[data-k]").forEach(el => el.textContent = projects[el.dataset.p][el.dataset.k][l]);
       document.querySelectorAll("[data-s]").forEach(el => el.textContent = projects[el.dataset.p].specs[el.dataset.s][l === "ro" ? 0 : 1]);
       document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.l === l));
