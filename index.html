@@ -82,7 +82,8 @@
                  en: "Student. I draw in 2D in AutoCAD and model in 3D in Fusion 360. Drag the models to spin them." },
       hint:    { ro: "trage · zoom", en: "drag · zoom" },
       hintImg: { ro: "click · mărește", en: "click · enlarge" },
-      dl:      { ro: "Descarcă fișierul DXF", en: "Download the DXF file" }
+      dl:      { ro: "Descarcă fișierul", en: "Download the" },
+      dlEnd:   { ro: "", en: " file" }
     };
 
     // ✏️ Section headings. Each project below names its group.
@@ -92,35 +93,35 @@
     };
 
     // ✏️ Your projects, in display order.
-    // 3D: put .glb files in models/ and set "model". 2D: put an .svg in drawings/ and set "drawing" (+ "dxf" for a download link).
-    // specs: [label in Romanian, label in English, value]
+    // 3D: put .glb files in models/ and set "model". 2D: put an .svg in drawings/ and set "drawing" (+ "file" for a download link: .dxf for drawings, .stl for 3D parts).
+    // specs: [label in Romanian, label in English, value] — value can be one string, or ["ro text", "en text"]
     const projects = [
       { group: "autocad",
         title: { ro: "Rozetă gotică", en: "Gothic tracery rosette" },
         text:  { ro: "Rozetă în trei părți, în stilul ferestrelor gotice, construită din arce tangente. Am desenat un segment și l-am multiplicat polar de trei ori.",
                  en: "A three-part rosette in the style of Gothic window tracery, built from tangent arcs. I drew one segment, then used a polar array to repeat it three times." },
         specs: [["Program", "Software", "AutoCAD"], ["Format", "Sheet", "A3"], ["Diametru", "Diameter", "Ø276 mm"]],
-        drawing: "drawings/gothic-rosette.svg", dxf: "drawings/gothic-rosette.dxf" },
+        drawing: "drawings/gothic-rosette.svg", file: "drawings/gothic-rosette.dxf" },
       { group: "fusion",
         title: { ro: "Carcasă și capac pentru lanternă DIY", en: "DIY flashlight case & lid" },
         text:  { ro: "Pentru o lanternă construită de mine. Nervurile interioare ghidează firul.", en: "For a flashlight I built. Inner ribs route the wire." },
-        specs: [["Piese", "Parts", "Carcasă + capac"], ["Electronică", "Electronics", "LED · 660 Ω"]],
-        model: "models/flashlight-case.glb" },
+        specs: [["Piese", "Parts", ["Carcasă + capac", "Case + lid"]], ["Electronică", "Electronics", "LED · 660 Ω"]],
+        model: "models/flashlight-case.glb", file: "models/stl/flashlight-case.stl" },
       { group: "fusion",
         title: { ro: "Buton custom cu sigla C.R.", en: "Custom button with C.R. logo" },
         text:  { ro: "Comandă pentru o cunoștință, cu inițialele ei ca siglă.", en: "Made on request, with a friend's initials as the logo." },
-        specs: [["Tip", "Type", "Comandă custom"], ["Caneluri", "Grooves", "24"]],
-        model: "models/grip-button.glb" },
+        specs: [["Tip", "Type", ["Comandă custom", "Custom order"]], ["Caneluri", "Grooves", "24"]],
+        model: "models/grip-button.glb", file: "models/stl/grip-button.stl" },
       { group: "fusion",
         title: { ro: "Sticlă de parfum octogonală", en: "Octagonal perfume bottle" },
         text:  { ro: "Opt fețe, fiecare cu un panou adâncit.", en: "Eight faces, each with a recessed panel." },
         specs: [["Fețe", "Faces", "8"], ["Panou", "Panel", "9 × 44 mm, 1.2 mm"]],
-        model: "models/perfume-bottle.glb" },
+        model: "models/perfume-bottle.glb", file: "models/stl/perfume-bottle.stl" },
       { group: "fusion",
         title: { ro: "Capac cupolă bizantină", en: "Onion dome cap" },
         text:  { ro: "Inspirat de cupolele ortodoxe. Se potrivește pe sticlă.", en: "Inspired by Orthodox domes. Fits the bottle." },
         specs: [["Trepte", "Tiers", "10"], ["Gaură", "Bore", "Ø8 mm"]],
-        model: "models/onion-dome-cap.glb" },
+        model: "models/onion-dome-cap.glb", file: "models/stl/onion-dome-cap.stl" },
     ];
 
     let lang = "ro";                                   // Romanian loads first
@@ -143,8 +144,8 @@
         <div class="text">
           <h2 data-p="${i}" data-k="title"></h2>
           <p data-p="${i}" data-k="text"></p>
-          <ul>${p.specs.map((s, j) => `<li><b data-p="${i}" data-s="${j}"></b>${s[2]}</li>`).join("")}</ul>
-          ${p.dxf ? `<a class="dl" href="${p.dxf}" download data-t="dl"></a>` : ""}
+          <ul>${p.specs.map((s, j) => `<li><b data-p="${i}" data-s="${j}"></b><span data-p="${i}" data-v="${j}"></span></li>`).join("")}</ul>
+          ${p.file ? `<a class="dl" href="${p.file}" download><span data-t="dl"></span> ${p.file.split(".").pop().toUpperCase()}<span data-t="dlEnd"></span></a>` : ""}
         </div>
       </article>`).join("");
 
@@ -155,6 +156,8 @@
       document.querySelectorAll("[data-t]").forEach(el => el.textContent = ui[el.dataset.t][l]);
       document.querySelectorAll("[data-g]").forEach(el => el.textContent = groups[el.dataset.g][el.dataset.gk][l]);
       document.querySelectorAll("[data-k]").forEach(el => el.textContent = projects[el.dataset.p][el.dataset.k][l]);
+      document.querySelectorAll("[data-v]").forEach(el => { const v = projects[el.dataset.p].specs[el.dataset.v][2];
+        el.textContent = Array.isArray(v) ? v[l === "ro" ? 0 : 1] : v; });
       document.querySelectorAll("[data-s]").forEach(el => el.textContent = projects[el.dataset.p].specs[el.dataset.s][l === "ro" ? 0 : 1]);
       document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.l === l));
     }
